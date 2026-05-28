@@ -1,0 +1,48 @@
+semantic_models:
+  dddm_sm_subscription:
+    env_var: SUBSCRIPTION_SEMANTIC_MODEL_ID
+    workspace_env_var: FABRIC_WORKSPACE_ID
+    primary_date_column: VoucherHeader.TransDate
+    core_tables:
+      - MemberTrans
+      - MemberTransTypes
+      - VoucherHeader
+      - Member
+      - Branch
+      - User
+    measures:
+      - New Subscription
+      - Renewed Memberships
+      - Cancelled Subscriptions
+  dddm_sm_manualstamp:
+    env_var: MANUAL_STAMP_SEMANTIC_MODEL_ID
+    workspace_env_var: FABRIC_WORKSPACE_ID
+    primary_date_column: SignCollHeader.TransDate
+    core_tables:
+      - SignCollHeader
+      - SignCollDetail
+      - Branch
+      - User
+    measures:
+      - Manual Attestations
+  dddm_sm_electronicstamp:
+    env_var: ELECTRONIC_STAMP_SEMANTIC_MODEL_ID
+    workspace_env_var: FABRIC_WORKSPACE_ID
+    primary_date_column: ESFormContents.ApprovalDate
+    core_tables:
+      - ESFormContents
+      - ESFORMSTATUS
+    measures:
+      - Approved Electronic Attestations
+  dddm_sm_permit:
+    env_var: PERMIT_SEMANTIC_MODEL_ID
+    workspace_env_var: FABRIC_WORKSPACE_ID
+    primary_date_column: PermitCompet.IssueDate
+    core_tables:
+      - PermitCompet
+      - PermitCompetExtend
+      - PermitCompetBranch
+      - PermitPromotional
+      - PermitReexportCert
+    measures:
+      - Total Permits

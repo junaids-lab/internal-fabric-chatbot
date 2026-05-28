@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RDCCI Internal Fabric Chatbot</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <h1>RDCCI Internal Fabric Chatbot</h1>
+          <p id="status">Not signed in</p>
+        </div>
+        <div class="actions">
+          <button id="signInButton" type="button">Sign in</button>
+          <button id="signOutButton" type="button" class="secondary" disabled>Sign out</button>
+        </div>
+      </section>
+
+      <section id="messages" class="messages" aria-live="polite"></section>
+
+      <form id="chatForm" class="composer">
+        <textarea
+          id="questionInput"
+          rows="3"
+          placeholder="اكتب سؤالك هنا... / Type your question..."
+          required
+        ></textarea>
+        <div class="composerFooter">
+          <label>
+            Locale
+            <select id="localeInput">
+              <option value="">Auto</option>
+              <option value="ar">Arabic</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <button id="sendButton" type="submit" disabled>Ask</button>
+        </div>
+      </form>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

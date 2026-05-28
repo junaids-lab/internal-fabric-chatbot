@@ -1,0 +1,56 @@
+intents:
+  new_subscriptions_count:
+    semantic_model: dddm_sm_subscription
+    measure: New Subscription
+    arabic_terms:
+      - الاشتراكات الجديدة
+      - العضويات الجديدة
+      - عدد الجدد
+    english_terms:
+      - new subscriptions
+      - new memberships
+  renewed_memberships_count:
+    semantic_model: dddm_sm_subscription
+    measure: Renewed Memberships
+    arabic_terms:
+      - العضويات المجددة
+      - التجديد
+    english_terms:
+      - renewed memberships
+      - renewals
+  cancelled_subscriptions_count:
+    semantic_model: dddm_sm_subscription
+    measure: Cancelled Subscriptions
+    arabic_terms:
+      - إلغاء الاشتراك
+      - حالات الإلغاء
+    english_terms:
+      - subscription cancellations
+      - cancelled subscriptions
+  manual_attestations_count:
+    semantic_model: dddm_sm_manualstamp
+    measure: Manual Attestations
+    arabic_terms:
+      - التصاديق اليدوية
+      - تصديق يدوي
+    english_terms:
+      - manual attestations
+      - manual stamp
+  electronic_attestations_count:
+    semantic_model: dddm_sm_electronicstamp
+    measure: Approved Electronic Attestations
+    arabic_terms:
+      - التصاديق الإلكترونية
+      - المعاملات الإلكترونية
+    english_terms:
+      - electronic attestations
+      - electronic stamp
+  permits_count:
+    semantic_model: dddm_sm_permit
+    measure: Total Permits
+    arabic_terms:
+      - التصاريح
+      - تصريح
+    english_terms:
+      - permits
+      - permit issuance
