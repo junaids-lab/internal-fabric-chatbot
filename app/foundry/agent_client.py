@@ -139,21 +139,21 @@ class FoundryAgentClient:
             "instructions": AGENT_INSTRUCTIONS,
         }
 
-        if settings.azure_ai_foundry_agent_name:
-            payload["agent_reference"] = {
-                "type": "agent_reference",
-                "name": settings.azure_ai_foundry_agent_name,
-            }
-        else:
-            payload["model"] = settings.azure_ai_foundry_model_deployment
+        # The Responses API rejects custom instructions and tools when an agent_reference
+        # is supplied. This backend must provide the execute_semantic_query tool
+        # dynamically, so use the model deployment directly for /chat orchestration.
+        payload["model"] = settings.azure_ai_foundry_model_deployment
 
         if previous_response_id:
             payload["previous_response_id"] = previous_response_id
         if include_tools:
             payload["tools"] = [EXECUTE_SEMANTIC_QUERY_TOOL]
 
-        async with httpx.AsyncClient(timeout=90) as client:
-            response = await client.post(await self._responses_url(), headers=await self._headers(), json=payload)
+        try:
+            async with httpx.AsyncClient(timeout=90, trust_env=False) as client:
+                response = await client.post(await self._responses_url(), headers=await self._headers(), json=payload)
+        except httpx.RequestError as exc:
+            raise RuntimeError(f"Foundry agent request failed: {exc}") from exc
 
         if response.status_code >= 400:
             raise RuntimeError(f"Foundry agent call failed: {response.status_code} {response.text}")
@@ -206,7 +206,8 @@ class FoundryAgentClient:
                     "the question to the correct semantic model, measure, and backend tool call. Call "
                     "execute_semantic_query for any numeric, count, comparison, trend, ranking, or KPI question. "
                     "After tool results return, explain the answer in final_answer_language unless the user "
-                    "explicitly asks for another language. Do not invent values."
+                    "explicitly asks for another language. Do not invent values. Use plain text only; do not "
+                    "use Markdown bold, asterisks, tables, or decorative formatting."
                 ),
             },
             ensure_ascii=False,
@@ -334,6 +335,12 @@ After the tool returns data, interpret the result clearly in final_answer_langua
 If the user asks in Arabic, answer in Arabic. If the user asks in English, answer in English. If requested_locale overrides this, follow requested_locale.
 Mention the semantic model and, when useful, the intent/measure.
 If a required date, branch, permit type, or attestation type is missing and the question cannot be answered safely, ask one concise clarification question.
+Use plain text only. Do not use Markdown formatting. Do not use bold markers, asterisks, tables, headings, or decorative bullets.
+Keep the answer professional and general. Use short sentences.
+For a single KPI value, use this style: The permit count is 290,857. Source: dddm_sm_permit. Intent: permits_count.
+For Arabic, use the same plain-text style without Markdown: عدد التصاريح هو 290,857. المصدر: dddm_sm_permit. المؤشر: permits_count.
+Do not offer unsupported breakdowns or comparisons unless the returned tool data contains those breakdowns or comparisons.
+Do not infer date periods that are not present in filters or returned by the backend.
 """.strip()
 
 
