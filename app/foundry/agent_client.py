@@ -244,7 +244,7 @@ class FoundryAgentClient:
 
     def _fallback_agent_answer(
         self,
-        route: RoutedQuery,
+        route: RoutedQuery | None,
         rows: list[dict[str, Any]],
         locale: str | None,
         question: str,
@@ -254,13 +254,47 @@ class FoundryAgentClient:
 
         first_row = rows[0]
         value = next(iter(first_row.values())) if len(first_row) == 1 else rows
-        if locale == "ar" or _looks_arabic(question):
-            return f"الإجابة: {value}\n\nالمصدر: {route.semantic_model_name}\nالمؤشر: {route.intent}"
-        return f"Answer: {value}\n\nSource: {route.semantic_model_name}\nIntent: {route.intent}"
+
+        if value is None:
+            value = 0
+
+        semantic_model = route.semantic_model_name if route else "unknown"
+        intent = route.intent if route else "unknown"
+        is_arabic = _wants_arabic_response(locale, question)
+        label = _friendly_label(intent, is_arabic)
+
+        if is_arabic:
+            return (
+                f"{label} هو {value:,}.\n"
+                f"المصدر: {semantic_model}.\n"
+                f"المؤشر: {intent}."
+            )
+
+        return (
+            f"{label} is {value:,}.\n"
+            f"Source: {semantic_model}.\n"
+            f"Intent: {intent}."
+        )
 
 
 def _looks_arabic(text: str) -> bool:
     return any("\u0600" <= char <= "\u06ff" for char in text)
+
+
+def _wants_arabic_response(locale: str | None, question: str) -> bool:
+    return locale == "ar" or _looks_arabic(question)
+
+
+def _friendly_label(intent: str, is_arabic: bool) -> str:
+    labels = {
+        "new_subscriptions_count": ("عدد الاشتراكات الجديدة", "the number of new subscriptions"),
+        "renewed_memberships_count": ("عدد العضويات المجددة", "the number of renewed memberships"),
+        "cancelled_subscriptions_count": ("عدد الاشتراكات الملغاة", "the number of cancelled subscriptions"),
+        "manual_attestations_count": ("عدد التصاديق اليدوية", "the number of manual attestations"),
+        "electronic_attestations_count": ("عدد التصاديق الإلكترونية", "the number of electronic attestations"),
+        "permits_count": ("عدد التصاريح", "the number of permits"),
+    }
+    return labels.get(intent, ("النتيجة", "the result"))[0 if is_arabic else 1]
 
 
 def _requested_language(locale: str | None, detected_language: str) -> str:

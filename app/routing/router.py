@@ -19,7 +19,7 @@ def route_question(question: str, filters: dict[str, Any], evidence: list[dict[s
     intent = _classify_intent(normalized, evidence)
     model_name = _semantic_model_for_intent(intent)
     model_id = _semantic_model_id(model_name)
-    dax_query = build_dax_for_intent(intent, filters)
+    dax_query = build_dax_for_intent(intent, filters, question)
 
     return RoutedQuery(
         intent=intent,
